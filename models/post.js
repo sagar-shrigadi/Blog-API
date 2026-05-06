@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
 export const getAllPost = async () => {
   return await prisma.post.findMany({ orderBy: { id: "asc" } });
@@ -14,6 +14,7 @@ export const createNewPost = async (title, content) => {
 export const getPostById = async (postId) => {
   return prisma.post.findFirst({
     where: { id: postId },
+    include: { comments: { orderBy: { id: "asc" } } },
   });
 };
 export const editPostById = async (postId, title, content) => {
