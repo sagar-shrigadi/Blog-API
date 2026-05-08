@@ -1,3 +1,3 @@
 export const getIndex = (req, res, next) => {
-  res.json({ res: "Index route" });
+  res.json({ msg: "Index route" });
 };

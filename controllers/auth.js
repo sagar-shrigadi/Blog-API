@@ -57,6 +57,7 @@ export const authenticateToken = async (req, res, next) => {
       error.name === "TokenExpiredError" ||
       error.name === "JsonWebTokenError"
     ) {
+      console.error("Token Authenticate Error: ", error);
       return res.status(403).json({ msg: "Invalid or Expired Token" });
     }
 

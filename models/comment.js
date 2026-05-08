@@ -1,9 +1,10 @@
 import { prisma } from "../lib/prisma.js";
 
-export const createNewComment = async (postId, message) => {
+export const createNewComment = async (userId, postId, message) => {
   return await prisma.comment.create({
     data: {
       message,
+      author: { connect: { id: userId } },
       post: { connect: { id: postId } },
     },
   });
