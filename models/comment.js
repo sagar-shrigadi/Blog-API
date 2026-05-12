@@ -10,7 +10,7 @@ export const createNewComment = async (userId, postId, message) => {
   });
 };
 export const getCommentById = async (commentId) => {
-  return prisma.comment.findFirst({
+  return prisma.comment.findUnique({
     where: { id: commentId },
   });
 };

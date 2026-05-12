@@ -1,7 +1,10 @@
 import { prisma } from "../lib/prisma.js";
 
 export const getAllPost = async () => {
-  return await prisma.post.findMany({ orderBy: { id: "asc" } });
+  return await prisma.post.findMany({
+    include: { _count: { select: { comments: true } } },
+    orderBy: { createdAt: "desc" },
+  });
 };
 export const createNewPost = async (
   userId,
@@ -21,9 +24,15 @@ export const createNewPost = async (
   });
 };
 export const getPostById = async (postId) => {
-  return prisma.post.findFirst({
+  return prisma.post.findUnique({
     where: { id: postId },
-    include: { comments: { orderBy: { id: "asc" } } },
+    include: {
+      author: { select: { username: true } },
+      comments: {
+        include: { author: { select: { username: true } } },
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
 };
 export const editPostById = async (
