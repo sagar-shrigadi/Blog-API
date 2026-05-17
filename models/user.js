@@ -13,7 +13,12 @@ export const getUserAuth = async (username) => {
     },
   });
 };
-
+export const getUserById = async (userId) => {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, username: true, admin: true },
+  });
+};
 export const insertUser = async (username, password) => {
   return prisma.user.create({
     data: {
