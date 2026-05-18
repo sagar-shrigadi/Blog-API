@@ -47,6 +47,13 @@ export const editPostById = async (
     include: { comments: { orderBy: { id: "asc" } } },
   });
 };
+export const editPostPublishStatusById = async (postId, newStatus) => {
+  return prisma.post.update({
+    where: { id: postId },
+    data: { published: newStatus },
+    include: { comments: { orderBy: { id: "asc" } } },
+  });
+};
 export const deletePostById = async (postId) => {
   return prisma.post.delete({
     where: { id: postId },

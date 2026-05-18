@@ -3,9 +3,11 @@ import {
   createNewPost,
   deletePostById,
   editPostById,
+  editPostPublishStatusById,
   getAllPost,
   getPostById,
 } from "../models/post.js";
+import { getUserById } from "../models/user.js";
 
 export const allPosts = async (req, res, next) => {
   try {
@@ -72,6 +74,35 @@ export const editSelectPost = async (req, res, next) => {
           isPublished,
         );
         return res.status(200).json({ editedPost });
+      } else {
+        return res.status(403).end();
+      }
+    } else {
+      return res.status(404).json({ msg: "user not found!" });
+    }
+  } catch (error) {
+    console.error("Edit Post Error: ", error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+export const editSelectPostPublishStatus = async (req, res, next) => {
+  const userId = Number(req.user.id);
+
+  try {
+    const user = await getUserById(userId);
+    if (user) {
+      if (user.admin) {
+        const postId = Number(req.params.postId);
+        const { newStatus } = req.body;
+        console.log("new status", newStatus);
+
+        const editedPublishStatusPost = await editPostPublishStatusById(
+          postId,
+          newStatus,
+        );
+        console.log("post after updating status", editedPublishStatusPost);
+
+        return res.json({ editedPublishStatusPost });
       } else {
         return res.status(403).end();
       }
