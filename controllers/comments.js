@@ -4,6 +4,7 @@ import {
   editCommentById,
   getCommentById,
 } from "../models/comment.js";
+import { getUserById } from "../models/user.js";
 
 export const newComment = async (req, res, next) => {
   try {
@@ -36,28 +37,49 @@ export const selectComment = async (req, res, next) => {
   }
 };
 export const editSelectComment = async (req, res, next) => {
+  const userId = Number(req.user.id);
+  // console.log("User id after auth token verification", userId);
   try {
-    // comment id to edit
-    const commentId = Number(req.params.commentId);
+    const user = await getUserById(userId);
 
-    // add comment validation here
-    const { message } = req.body;
+    if (user) {
+      console.log("user obj when editing comment", user);
 
-    const userId = Number(req.user.id);
-    console.log("User id after auth token verification", userId);
+      if (user.admin) {
+        // comment id to edit
+        const commentId = Number(req.params.commentId);
 
-    const editedComment = await editCommentById(commentId, message);
-    return res.status(200).json({ editedComment });
+        // add comment validation here
+        const { message } = req.body;
+
+        const editedComment = await editCommentById(commentId, message);
+        return res.status(200).json({ editedComment });
+      } else {
+        return res.status(403).end();
+      }
+    } else {
+      return res.status(404).json({ msg: "user not found!" });
+    }
   } catch (error) {
     console.error("Edit Comment Error", error);
     return res.status(500).json({ msg: "Internal Server Error" });
   }
 };
 export const deleteSelectComment = async (req, res, next) => {
+  const userId = Number(req.user.id);
   try {
-    const commentId = Number(req.params.commentId);
-    await deleteCommentById(commentId);
-    return res.status(204).json({ msg: "comment successfully deleted" });
+    const user = await getUserById(userId);
+    if (user) {
+      if (user.admin) {
+        const commentId = Number(req.params.commentId);
+        await deleteCommentById(commentId);
+        return res.status(204).json({ msg: "comment successfully deleted" });
+      } else {
+        return res.status(403).end();
+      }
+    } else {
+      return res.status(404).json({ msg: "user not found!" });
+    }
   } catch (error) {
     console.error("Delete Comment Error", error);
     return res.status(500).json({ msg: "Internal Server Error" });

@@ -17,14 +17,28 @@ export const allPosts = async (req, res, next) => {
   }
 };
 export const newPost = async (req, res, next) => {
+  const userId = Number(req.user.id);
   try {
-    // add content validation here
-    const { title, content, isPublished } = req.body;
-    // get userId from jwt to pass it as author to new post
-    const userId = Number(req.user.id);
-    console.log("User Id From Req.User.Id after token auth", userId);
-    const newPost = await createNewPost(userId, title, content, isPublished);
-    return res.status(201).json({ newPost });
+    const user = await getUserById(userId);
+
+    if (user) {
+      if (user.admin) {
+        // add content validation here
+        const { title, content, isPublished } = req.body;
+        console.log("User Id From Req.User.Id after token auth", userId);
+        const newPost = await createNewPost(
+          userId,
+          title,
+          content,
+          isPublished,
+        );
+        return res.status(201).json({ newPost });
+      } else {
+        return res.status(403).end();
+      }
+    } else {
+      return res.status(404).json({ msg: "user not found" });
+    }
   } catch (error) {
     console.error("Create New Post Error: ", error);
     return res.status(500).json({ msg: "Internal Server Error" });
@@ -41,26 +55,50 @@ export const selectPost = async (req, res, next) => {
   }
 };
 export const editSelectPost = async (req, res, next) => {
+  const userId = Number(req.user.id);
   try {
-    const postId = Number(req.params.postId);
-    // add post validation here
-    const { title, content, isPublished } = req.body;
+    const user = await getUserById(userId);
 
-    // get userId from jwt to pass as author
-    const userId = Number(req.user.id);
+    if (user) {
+      if (user.admin) {
+        const postId = Number(req.params.postId);
+        // add post validation here
+        const { title, content, isPublished } = req.body;
 
-    const editedPost = await editPostById(postId, title, content, isPublished);
-    return res.status(200).json({ editedPost });
+        const editedPost = await editPostById(
+          postId,
+          title,
+          content,
+          isPublished,
+        );
+        return res.status(200).json({ editedPost });
+      } else {
+        return res.status(403).end();
+      }
+    } else {
+      return res.status(404).json({ msg: "user not found!" });
+    }
   } catch (error) {
     console.error("Edit Post Error: ", error);
     return res.status(500).json({ msg: "Internal Server Error" });
   }
 };
 export const deleteSelectPost = async (req, res, next) => {
+  const userId = Number(req.user.id);
   try {
-    const postId = Number(req.params.postId);
-    await deletePostById(postId);
-    return res.status(204).json({ msg: "post successfully deleted" });
+    const user = await getUserById(userId);
+
+    if (user) {
+      if (user.admin) {
+        const postId = Number(req.params.postId);
+        await deletePostById(postId);
+        return res.status(204).end();
+      } else {
+        return res.status(403).end();
+      }
+    } else {
+      return res.status(404).json({ msg: "user not found!" });
+    }
   } catch (error) {
     console.error("Delete Post Error", error);
     return res.status(500).json({ msg: "Internal Server Error" });
