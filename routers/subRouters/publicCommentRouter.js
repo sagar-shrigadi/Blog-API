@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { selectComment } from "../controllers/comments.js";
+import { selectComment } from "../../controllers/comments.js";
 
 export const publicCommentRouter = Router({ mergeParams: true });
 

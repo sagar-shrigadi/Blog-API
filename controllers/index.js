@@ -1,8 +1,5 @@
 import { getUserById } from "../models/user.js";
 
-export const getIndex = (req, res, next) => {
-  res.json({ msg: "Index route" });
-};
 export const getMe = async (req, res) => {
   const userId = Number(req.params.userId);
 

@@ -4,8 +4,8 @@ import {
   editSelectPost,
   editSelectPostPublishStatus,
   newPost,
-} from "../controllers/posts.js";
-import { newComment } from "../controllers/comments.js";
+} from "../../controllers/posts.js";
+import { newComment } from "../../controllers/comments.js";
 
 export const postRouter = Router();
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { allPosts, selectPost } from "../controllers/posts.js";
+import { allPosts, selectPost } from "../../controllers/posts.js";
 
 export const publicPostRouter = Router({ mergeParams: true });
 
