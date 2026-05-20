@@ -11,6 +11,9 @@ export const postLogin = async (req, res) => {
     // db lookup to verify user exists
     const user = await getUserAuth(username);
 
+    if (user == null) {
+      return res.status(400).json({ msg: "Invalid credentials" });
+    }
     // compare user entered plain text password
     // with the hash stored in db
     // if user doesnt exist from above db lookup
@@ -68,6 +71,10 @@ export const authenticateToken = async (req, res, next) => {
 export const postSignup = async (req, res, next) => {
   try {
     const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ msg: "Input fields must not be empty!" });
+    }
 
     const hashedPassword = await argon2.hash(password);
     const newUser = await insertUser(username, hashedPassword);
