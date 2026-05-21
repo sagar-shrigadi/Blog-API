@@ -1,87 +1,104 @@
-# 📝 Blog API
+# Blog API
 
-A RESTful API built for a blogging platform. This project handles user authentication, post creation, commenting systems, and author permissions. Built as part of **The Odin Project** Node.js curriculum.
+A RESTful API built with Express, Prisma, and PostgreSQL that serves as the backend engine for a dual-frontend blog system (Client and Admin-only CMS).
+Implemented JWT authentication and supports full CRUD operations for posts, comments, and users.
 
-## 🚀 Live Demo & Client Link
+## 🔗 Links
 
-- **Live API:** `[Insert Render/Heroku/Fly.io Link Here]`
-- **Front-End Client Repo:** `[Insert link to your frontend repo if applicable]`
+- Live site for Client App can be found [here](https://blog-api-client.pages.dev/).
+- The source code for blog-api-client can be found [here](https://github.com/sagar-shrigadi/Blog-API-Client).
+- The source code for blog-api-cms (admin site) can be found [here](https://github.com/sagar-shrigadi/Blog-API-CMS).
 
----
+## 🚀 Features
 
-## 🛠️ Tech Stack
+- A simple and flexible API that makes it easy to interact with your blog's data.
+- Support for CRUD (Create, Read, Update, Delete) operations for posts, comments, and other data.
+- Authentication and authorization to ensure that only authorized users have access to your data.
+- Robust error handling to ensure that your data is accurate and secure.
 
-- **Runtime Environment:** Node.js
-- **Framework:** Express.js
-- **Database:** PostgreSQL (via Prisma ORM)
-- **Authentication:** JWT
-- **Environment Variables:** dotenv
+## ⚙️ Setup Instructions
 
----
+### Prerequisite
 
-## ✨ Features
+Ensure you have Node.js and a PostgreSQL instance running.
 
-- **Secure Authentication:** User signup and login utilizing JSON Web Tokens (JWT) for stateless session management.
-- **Author vs. User Roles:** Only designated authors can create, update, or delete blog posts.
-- **Interactive Comments:** Any registered user can comment on published posts.
-- **Draft/Publish System:** Authors can save posts as drafts before making them public.
-- **Input Validation:** Strict data sanitization and validation using `express-validator`.
+### 1. Clone the repository
 
----
+```bash
+git@github.com:sagar-shrigadi/Blog-API.git
+cd Blog-API
+```
 
-## 🛣️ API Endpoints
+### 2. Install dependencies
 
-### Authentication
+```bash
+npm install
+```
 
-- `POST /api/signup` - Register a new user
-- `POST /api/login` - Authenticate user and receive a JWT
+### 3. Environment Variables
 
-### Posts
+- Create a `.env` file in the root directory and add all variables from .env.example file.
+- When using a local instance of postgres ensure both of the following are the same!
+- When using a cloud based db, enter the connection strings as in .env.example file.
 
-- `GET /api/posts` - Get all published posts
-- `GET /api/posts/:id` - Get a specific post
-- `POST /api/posts` - Create a new post _(Author only)_
-- `PUT /api/posts/:id` - Update a post _(Author only)_
-- `DELETE /api/posts/:id` - Delete a post _(Author only)_
+```env
+DATABASE_URL
+```
 
-### Comments
+and
 
-- `GET /api/posts/:id/comments` - Get all comments for a post
-- `POST /api/posts/:id/comments` - Add a comment _(Registered users)_
-- `DELETE /api/posts/:id/comments/:commentId` - Delete a comment _(Author/Admin only)_
+```env
+DIRECT_URL
+```
 
----
+### 4. Database Migrations
 
-## ⚙️ Installation & Setup
+Run Prisma migrations to create database tables and generate the client.
 
-1. **Clone the repository:**
+```bash
+npx prisma migrate dev --name init
+npx prisma generate
+```
 
-   ```bash
-   git clone [Your-GitHub-Repository-URL]
-   cd [Your-Repository-Folder-Name]
-   ```
+### 4. Start the Server
 
-2. **Install dependencies:**
+```bash
+npm start
+```
 
-   ```bash
-   npm install
-   ```
+## 🌐 API Endpoints
 
-3. **Set up environment variables:**
-   Create a `.env` file in the root directory and add the following:
+### Public Routes
 
-   ```env
-   PORT=5000
-   MONGO_URI=your_mongodb_connection_string
-   JWT_SECRET=your_super_secret_jwt_key
-   ```
+#### Authentication
 
-4. **Run the server:**
-   - Development mode (with nodemon):
-     ```bash
-     npm run dev
-     ```
-   - Production mode:
-     ```bash
-     npm start
-     ```
+- `POST /api/sign-up` - Create a new user account.
+- `POST /api/login` - Authenticate user and return a JWT.
+
+#### Blog Posts
+
+- `GET /api/posts` - Fetch all posts.
+- `GET /api/posts/:postId` - Fetch a single post.
+
+#### Comments
+
+- `GET /api/comments/:commentId` - Fetch a comment.
+
+### Protected Routes
+
+#### Authentication
+
+- `POST /api/me/:userId` - authenticate jwt token and return a user object with helpful properties about user (Protected/Admin).
+
+#### Blog Posts
+
+- `POST /api/posts` - Create a new post (Protected/Admin).
+- `PATCH /api/posts/:postId` - Toggle publish status of a post (Protected/Admin).
+- `PUT /api/posts/:postId` - Update a post (Protected/Admin).
+- `DELETE /api/posts/:postId` - Delete a post (Protected/Admin).
+
+#### Comments
+
+- `POST /api/posts/:postId/comments` - Add a comment on a post (Protected/logged-in-user).
+- `PUT /api/comments/:commentId` - Edit a comment (Protected/Admin).
+- `DELETE /api/comments/:commentId` - Delete a comment (Protected/Admin).
