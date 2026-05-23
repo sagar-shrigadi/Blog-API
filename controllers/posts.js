@@ -1,4 +1,6 @@
 import { prisma } from "../lib/prisma.js";
+import { JSDOM } from "jsdom";
+import DOMPurify from "dompurify";
 import {
   createNewPost,
   deletePostById,
@@ -8,6 +10,9 @@ import {
   getPostById,
 } from "../models/post.js";
 import { getUserById } from "../models/user.js";
+
+const window = new JSDOM("").window;
+const purify = DOMPurify(window);
 
 export const allPosts = async (req, res, next) => {
   try {
@@ -25,13 +30,18 @@ export const newPost = async (req, res, next) => {
 
     if (user) {
       if (user.admin) {
+        console.log("User Id From Req.User.Id after token auth", userId);
         // add content validation here
         const { title, content, isPublished } = req.body;
-        console.log("User Id From Req.User.Id after token auth", userId);
+
+        // sanitized content to prevent xss attacks
+        const cleanContent = purify.sanitize(content);
+        console.log("sanitized html content", cleanContent);
+
         const newPost = await createNewPost(
           userId,
           title,
-          content,
+          cleanContent,
           isPublished,
         );
         return res.status(201).json({ newPost });
@@ -67,10 +77,14 @@ export const editSelectPost = async (req, res, next) => {
         // add post validation here
         const { title, content, isPublished } = req.body;
 
+        // sanitized content to prevent xss attacks
+        const cleanContent = purify.sanitize(content);
+        console.log("Sanitized HTML content b4 storing to db", cleanContent);
+
         const editedPost = await editPostById(
           postId,
           title,
-          content,
+          cleanContent,
           isPublished,
         );
         return res.status(200).json({ editedPost });
