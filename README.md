@@ -13,7 +13,7 @@ Implemented JWT authentication and supports full CRUD operations for posts, comm
 
 - A simple and flexible API that makes it easy to interact with your blog's data.
 - Support for CRUD (Create, Read, Update, Delete) operations for posts, comments, and other data.
-- Authentication and authorization to ensure that only authorized users have access to your data.
+- Authentication and authorization to ensure that only authorized users can access certain routes.
 - Robust error handling to ensure that your data is accurate and secure.
 
 ## ⚙️ Setup Instructions
